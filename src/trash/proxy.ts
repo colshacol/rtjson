@@ -31,11 +31,3 @@ export default (target) => {
     },
   })
 }
-
-// apply(target, self, args) {
-//   if (natives.callers.has(property)) {
-//     return natives.callers.get(property)(target, property, args)
-//   }
-
-//   Reflect.apply(target, property, receiver)
-// },

@@ -1,14 +1,24 @@
-import * as Router from 'router'
-import * as compression from 'compression'
-import * as bodyParser from 'body-parser'
+import Router from 'router'
+import compression from 'compression'
+import bodyParser from 'body-parser'
 
-const withCustomContext = (handler) => (request, response) => {
-  return handler({ request, response })
+const send = (response) => (data) => {
+  response.setHeader('Content-Type', 'application/json; charset=utf-8')
+  return typeof data === 'string' ? response.end(data) : response.end(JSON.stringify(data))
 }
 
-const registerRoute = (router, options) => ({ method, match, handler }) => {
+const withCustomContext = (handler, options) => (request, response) => {
+  return handler({ ...options.context, request, response, send: send(response) })
+}
+
+const registerRoute = (router, options) => ({ method, match, handler, middleware }) => {
   const path = `${options.routePrefix}${match}`
-  router[method](path, withCustomContext(handler))
+
+  // middleware.forEach((mw) => {
+  //   router.use(path, mw())
+  // })
+
+  router[method](path, withCustomContext(handler, options))
 }
 
 const createRouter = () => {
@@ -18,7 +28,13 @@ const createRouter = () => {
   })
 }
 
-const applyMiddleware = (router) => {
+// const applyRouteMiddleware = (route, middlewares) => {
+//   middlewares.forEach((middleware) => {
+//     router.use(middleware())
+//   })
+// }
+
+const applyRouterMiddleware = (router) => {
   router.use(compression())
   router.use(bodyParser.json())
 }
@@ -26,6 +42,6 @@ const applyMiddleware = (router) => {
 export default (options) => {
   const router = createRouter()
   options.routes.forEach(registerRoute(router, options))
-  applyMiddleware(router)
+  applyRouterMiddleware(router)
   return router
 }

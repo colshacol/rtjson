@@ -1,17 +1,27 @@
-import * as loki from 'lokijs'
-import proxy from './proxy'
+import loki from 'lokijs'
+
+const collectionName = (data) => `${data.user}:${data.name}`
 
 export default (socket) => {
-  const db = new loki('logs.db')
-  const logs = db.addCollection('logs')
+  const db = new loki('logs.db', { autoupdate: true, autosave: true, serializationMethod: 'pretty', autoload: true })
 
-  const database = proxy(logs)
+  const createCollection = (data) => {
+    db.addCollection(collectionName(data))
+  }
 
-  database.callers.set('insert', (log) => {
-    socket.broadcast(log)
-    logs.insert(log)
-    return log
-  })
+  const updateCollection = (data) => {
+    const collection = db.getCollection(collectionName(data))
 
-  return database
+    if (data.additions) {
+      collection.insert(data.additions)
+    }
+
+    socket.broadcast(data)
+  }
+
+  return {
+    createCollection,
+    updateCollection,
+    db,
+  }
 }
