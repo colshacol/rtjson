@@ -2,7 +2,7 @@ const WebSocket = require('ws')
 
 // Connect to the socket server.
 
-const ws = new WebSocket('ws://localhost:8080')
+const ws = new WebSocket('ws://rtjson-zwilsbdfzy.now.sh:8080')
 
 const storage = {
   uid: '',

@@ -66,6 +66,10 @@ export default class Socket {
   }
 
   onConnection = (client) => {
+    client.on('error', (err) => {
+      // Handle the error here.
+      console.log('ERROR', err)
+    })
     console.log('Got a connection.')
     const data = { messageType: 'uid', uid: nanoid() }
 
