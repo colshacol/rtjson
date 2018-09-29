@@ -1,8 +1,8 @@
 const WebSocket = require('ws')
 
-// Connect to the socket server.
+// Connect to the socket server. (This is the address to use.)
 
-const ws = new WebSocket('ws://rtjson-zwilsbdfzy.now.sh:8080')
+const ws = new WebSocket('wss://rtjson-vysaahrznr.now.sh')
 
 const storage = {
   uid: '',
@@ -49,7 +49,6 @@ ws.on('message', (data) => {
   }
 })
 
-// setTimeout(() => {
 //   sendMessage({
 //     uid: storage.uid,
 //     user: 'amit-patel',
@@ -69,4 +68,3 @@ ws.on('message', (data) => {
 //       },
 //     ],
 //   })
-// }, 5000)

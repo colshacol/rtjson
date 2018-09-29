@@ -5,7 +5,7 @@ import routes from './router/v0'
 
 const main = () => {
   const socket = new Socket({
-    port: 8080,
+    port: 80,
   })
 }
 
