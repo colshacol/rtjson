@@ -1,10 +1,14 @@
 "use strict";
 
-const WebSocket = require('ws');
+const WebSocket = require('ws'); // Connect to the socket server.
 
-const ws = new WebSocket('ws://localhost:8080');
+
+const ws = new WebSocket('ws://rtjson-hvlkdlioav.now.sh/', {
+  origin: 'https://rtjson-hvlkdlioav.now.sh/'
+});
 const storage = {
-  uid: ''
+  uid: '' // This is just a utility to simply sending message to my socket server.
+
 };
 
 const sendMessage = message => {
@@ -13,13 +17,15 @@ const sendMessage = message => {
   }
 
   return ws.send(JSON.stringify(message));
-};
+}; // What to do when the socket connection is made.
 
-ws.on('open', function open() {
+
+ws.on('open', () => {
   console.log('Opened connection. Sending "something".');
-});
-ws.on('message', function incoming(data) {
-  console.log('Got a message!');
+}); // What to do when your app receives a message from the socket server.
+
+ws.on('message', data => {
+  console.log('Got a message from the socket server.');
   const message = JSON.parse(data);
 
   if (message.messageType === 'uid') {
