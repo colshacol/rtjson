@@ -15,8 +15,6 @@ export default (socket) => {
     if (data.additions) {
       collection.insert(data.additions)
     }
-
-    socket.broadcast(data)
   }
 
   return {

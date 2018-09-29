@@ -1,6 +1,7 @@
 import WebSocket from 'ws'
 import nanoid from 'nanoid'
 
+import createDB from '../database'
 import onMessage from './onMessage'
 
 const collectionName = (data) => `${data.user}:${data.name}`
@@ -8,6 +9,7 @@ const collectionName = (data) => `${data.user}:${data.name}`
 export default class Socket {
   socket: any
 
+  db = createDB(this)
   subscriptions = new Map()
   associations = new Map()
   connections = new Set()

@@ -2,9 +2,7 @@ const WebSocket = require('ws')
 
 // Connect to the socket server.
 
-const ws = new WebSocket('ws://rtjson-hvlkdlioav.now.sh/', {
-  origin: 'https://rtjson-hvlkdlioav.now.sh/',
-})
+const ws = new WebSocket('ws://localhost:8080')
 
 const storage = {
   uid: '',
@@ -50,3 +48,25 @@ ws.on('message', (data) => {
     console.log(message)
   }
 })
+
+// setTimeout(() => {
+//   sendMessage({
+//     uid: storage.uid,
+//     user: 'amit-patel',
+//     name: 'my-collection',
+//     additions: [
+//       {
+//         type: 'log',
+//         messages: ['rorororor', 'bbb', '222'],
+//       },
+//       {
+//         type: 'error',
+//         messages: ['hehe', 'qa3ym,,', '111'],
+//       },
+//       {
+//         type: 'warn',
+//         messages: ['q3gaedg', 'srgrs', '998699'],
+//       },
+//     ],
+//   })
+// }, 5000)
