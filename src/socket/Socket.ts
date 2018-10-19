@@ -70,6 +70,7 @@ export default class Socket {
       // Handle the error here.
       console.log('ERROR', err)
     })
+
     console.log('Got a connection.')
     const data = { messageType: 'uid', uid: nanoid() }
 
