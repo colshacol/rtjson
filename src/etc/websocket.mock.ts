@@ -2,7 +2,7 @@ const WebSocket = require('ws')
 
 // Connect to the socket server. (This is the address to use.)
 
-const ws = new WebSocket('wss://rtjson-vysaahrznr.now.sh')
+const ws = new WebSocket('wss://rtjson-yeawvybzzp.now.sh/')
 
 const storage = {
   uid: '',

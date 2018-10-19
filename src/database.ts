@@ -11,8 +11,8 @@ export default (socket) => {
 
   const updateCollection = (data) => {
     const collection = db.getCollection(collectionName(data))
-    
-    ir (!collection) {
+
+    if (!collection) {
       createCollection(collectionName(data))
       return updateCollection(data)
     }
