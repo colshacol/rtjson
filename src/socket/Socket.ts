@@ -26,7 +26,7 @@ export default class Socket {
         this.connections.delete(uid)
         client.ping(() => {})
       })
-    }, 10000)
+    }, 5000)
   }
 
   sendTo = (client, data) => {
@@ -41,7 +41,15 @@ export default class Socket {
       console.log(`Broadcasting change to ${subs.size} subscribers.`)
 
       subs.forEach((client) => {
-        this.sendTo(client, { messageType: 'update', ...data })
+        try {
+          this.sendTo(client, { messageType: 'update', ...data })
+        } catch (error) {
+          this.associations.forEach((_client, uid) => {
+            if (_client == client) {
+              this.connections.delete(uid)
+            }
+          })
+        }
       })
     }
   }
