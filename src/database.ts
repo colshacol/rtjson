@@ -6,11 +6,13 @@ export default (socket) => {
   const db = new loki('logs.db', { autoupdate: true, autosave: true, serializationMethod: 'pretty', autoload: true })
 
   const createCollection = (data) => {
-    db.addCollection(collectionName(data))
+    return db.addCollection(collectionName(data))
   }
 
   const updateCollection = (data) => {
-    const collection = db.getCollection(collectionName(data))
+    const collection = db.getCollection(collectionName(data)) || createCollection(data)
+
+    console.log({ collection, data })
 
     if (!collection) {
       createCollection(collectionName(data))
