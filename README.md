@@ -1,71 +1,127 @@
 # rtjson
 
+A very simple, realtime JSON WebSocket server.
+
+## API Capabilities
+
+### Socket
+
+- Subscribe to a user/collection.
+- Post new entries to a user/collection.
+
+### REST
+
+- Create an account.
+- Create a collection.
+- Apply permissions to a collection.
+- Post new entries to a user/collection.
+
+## Example client usage.
+
+\_`rtjson` npm package does not yet exist! BEWARE
+
 ```js
-import WebSocket from 'isomorphic-ws'
+import rt from 'rtjson'
 
-// Connect to the socket server. (This is the address to use.)
-const ws = new WebSocket('wss://rtjson-yeawvybzzp.now.sh/')
-
-const storage = {
-  uid: '',
-}
-
-// This is just a utility to simply sending message to my socket server.
-
-const sendMessage = (message) => {
-  if (typeof message === 'string') {
-    return ws.send(message)
+class ServerLogs extends Rt.Subscription {
+  state = {
+    logs: [],
+    connectionStatus: '',
+    subscriptionStatus: ''
   }
 
-  return ws.send(JSON.stringify(message))
-}
+  willConnect(data) {
+    // Prescribe what you need to do prior to the socket
+    // connecting to rtjson. This method is useful mainly
+    // when you need to update the UI between the "connected"
+    // and "subscribed" sttaes.
 
-// What to do when the socket connection is made.
-ws.onopen = () => {
-  console.log('Opened connection. Sending "something".')
-}
-
-// What to do when your app receives a message from the socket server.
-ws.onmessage = (data) => {
-  console.log('Got a message from the socket server.')
-  const message = JSON.parse(data)
-
-  if (message.messageType === 'uid') {
-    console.log(`Connected with uid ${message.uid}`)
-    storage.uid = message.uid
-
-    return sendMessage({
-      uid: storage.uid,
-      subscribeTo: {
-        user: 'amit-patel',
-        name: 'my-collection',
-      },
+    this.setState({
+      connectionStatus: 'connecting'
     })
   }
 
-  if (message.messageType === 'update') {
-    console.log(`Update for ${message.user} / ${message.name}`)
-    console.log(message)
+  async willSubscribe(data) {
+    // Prescribe what you need to do prior to the socket
+    // subscribing to to the collection, but after it has
+    // already connected. An example may be fetching some
+    // the last 50 messages to populate a chat room.
+
+    const previousEntries = await rt.get({
+      userName: this.config.userName,
+      collectionName: this.config.collectionName,
+      entryCount: 10
+    })
+
+    this.setState({
+      logs: previousEntries
+    })
+  }
+
+  didConnect(data) {
+    // Prescribe what you need to do as soon as the socket
+    // is connected. (May be deprecated in favor of just using
+    // the socketWillSubscribe lifecycle method.)
+
+    this.setState({
+      connectionStatus: 'connected'
+    })
+  }
+
+  shouldDisconnect(data) {
+    // Sometimes, given the logic in your application, your socket
+    // may try to disconnect when you do not mean for it to.
+    // is a good time to make certain that this is what you want
+    // and potentially block the attempt, if necessary.
+
+    return doIWantItToDisconnect
+      ? true
+      : false
+  }
+
+  willDisconnect(data) {
+    // We've determined that a disconnect is your intent.
+    // So now, what would you like to do prior to disconnecting?
+
+    this.setState({
+      status: 'disconnecting'
+    })
+  }
+
+  didDisconnect(data) {
+    // After the socket has disconnected, whatchu wanna do?
+
+    this.setState({
+      status: 'disconnected'
+    })
+  }
+
+  receivedMessage(message) {
+    // Handle messages received from rtjson.
+  }
+
+  addLogToCollection = (type, messages) => {
+    this.sendMessage({
+      additions: [
+        {
+          type
+          messages
+        },
+      ]
+    })
+  }
+
+  update() {
+    // Will be called after state updates. Allows you to
+    // react to changes / updates after you have processed them
+    // and reduced them to your state.
   }
 }
 
-//   sendMessage({
-//     uid: storage.uid,
-//     user: 'amit-patel',
-//     name: 'my-collection',
-//     additions: [
-//       {
-//         type: 'log',
-//         messages: ['rorororor', 'bbb', '222'],
-//       },
-//       {
-//         type: 'error',
-//         messages: ['hehe', 'qa3ym,,', '111'],
-//       },
-//       {
-//         type: 'warn',
-//         messages: ['q3gaedg', 'srgrs', '998699'],
-//       },
-//     ],
-//   })
+const serverLogs = new ServerLogs({
+  userName: 'amit-patel',
+  collectionName: 'server-logs'
+})
+
+serverLogs.sendMessage('log', ['foo', 'bar', 'baz'])
 ```

@@ -10,8 +10,14 @@ export default class Socket {
   socket: any
 
   db = createDB(this)
+
+  // collectionName -> [ ...clients ]
   subscriptions = new Map()
+
+  // uid -> client
   associations = new Map()
+
+  // [ ...uids ]
   connections = new Set()
 
   constructor(options) {
@@ -30,7 +36,18 @@ export default class Socket {
   }
 
   sendTo = (client, data) => {
-    client.send(JSON.stringify(data))
+    delete data.uid
+
+    try {
+      client.send(JSON.stringify(data))
+    } catch (error) {
+      // NOTE: I am not sure if this works.
+      this.associations.forEach((_client, uid) => {
+        if (_client == client) {
+          this.connections.delete(uid)
+        }
+      })
+    }
   }
 
   broadcast = (data): void => {
@@ -41,15 +58,7 @@ export default class Socket {
       console.log(`Broadcasting change to ${subs.size} subscribers.`)
 
       subs.forEach((client) => {
-        try {
-          this.sendTo(client, { messageType: 'update', ...data })
-        } catch (error) {
-          this.associations.forEach((_client, uid) => {
-            if (_client == client) {
-              this.connections.delete(uid)
-            }
-          })
-        }
+        this.sendTo(client, { messageType: 'update', ...data })
       })
     }
   }

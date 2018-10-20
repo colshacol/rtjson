@@ -9,15 +9,12 @@ export default (socket) => {
     return db.addCollection(collectionName(data))
   }
 
+  const getCollection = (data) => {
+    return db.getCollection(collectionName(data)) || createCollection(data)
+  }
+
   const updateCollection = (data) => {
-    const collection = db.getCollection(collectionName(data)) || createCollection(data)
-
-    console.log({ collection, data })
-
-    if (!collection) {
-      createCollection(collectionName(data))
-      return updateCollection(data)
-    }
+    const collection = getCollection(data)
 
     if (data.additions) {
       collection.insert(data.additions)
