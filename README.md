@@ -18,10 +18,10 @@ A very simple, realtime JSON WebSocket server.
 
 ## Example client usage.
 
-\_`rtjson` npm package does not yet exist! BEWARE
+_`rtjson` npm package does not yet exist! BEWARE._
 
 ```js
-import rt from 'rtjson'
+import Rt from 'rtjson'
 
 class ServerLogs extends Rt.Subscription {
   state = {
@@ -118,10 +118,12 @@ class ServerLogs extends Rt.Subscription {
   }
 }
 
+// Create a connection/subscription.
+
 const serverLogs = new ServerLogs({
   userName: 'amit-patel',
   collectionName: 'server-logs'
 })
 
-serverLogs.sendMessage('log', ['foo', 'bar', 'baz'])
+serverLogs.addLogToCollection('log', ['foo', 'bar', 'baz'])
 ```
